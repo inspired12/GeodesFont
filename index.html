@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Geode - Load remote svg letters</title>
+</head>
+<body>
+
+<script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js'></script>
+<script>
+var margin = {top: 20, right: 10, bottom: 130, left: -120}, 
+   width = window.innerWidth*0.9 - margin.left - margin.right,
+	height = 1000 - margin.top - margin.bottom;
+var x = d3.scale.ordinal()
+	.rangeRoundBands([0, width], .1);
+var y = d3.scale.linear()
+	.range([height, 0]);
+var xAxis = d3.svg.axis()
+	.scale(x)
+	.orient('bottom');
+var yAxis = d3.svg.axis()
+	.scale(y)
+	.orient('left');
+var svg = d3.select('body').append('svg')
+	.attr('width', width + margin.left + margin.right)
+	.attr('height', height + margin.top + margin.bottom)
+    .append('g')
+	.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+    var alphabet = "abcdefghijklmnopqrstuvwxyz";
+    var thename = "Ashley";
+    var letterCount = 0;
+    var breaks = 0;
+
+    $(function(){
+
+    });
+
+
+var dataset = [ 5, 10, 13, 19];
+
+function writeLetter(_letter){
+
+    letterCount++;
+
+    var letter = _letter;
+    var id = alphabet.indexOf(letter)+2;
+    id = (id<10)?"0"+id:id;
+
+    d3.xml("images/letter-"+id+".svg", "image/svg+xml", function(xml) {
+
+      var importedNode = document.importNode(xml.documentElement, true);
+      svg.append("g").each(function(d, i){ 
+            var plane = this.appendChild(importedNode.cloneNode(true)); 
+            d3.select(plane).select("path").attr("fill", "blue");
+        }).attr("transform","translate("+letterCount*120+","+breaks*220+") scale(0.3)");
+
+    });
+
+}
+
+
+window.addEventListener("keypress", function(event){
+    var char = event.which || event.keyCode;
+    console.log(char);
+    if(char==13){
+        breaks++;
+        letterCount = 0;
+    }else{
+        char = String.fromCharCode(char);
+        writeLetter(char);
+    }
+});
+
+</script>
+	
+</body>
+</html>
